@@ -1,48 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-<link rel="manifest" href="./manifest.json">
-<link rel="apple-touch-icon" href="./icon.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
+ <head>
+  <meta charset="utf-8" />
+  <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <title>MoodWork</title>
 
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="MoodWork">
-<meta name="mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="./icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="MoodWork">
 
-    <meta charset="utf-8" />
-    <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <title>MoodWork</title>
-    <!-- The `react-native-web` recommended style reset: https://necolas.github.io/react-native-web/docs/setup/#root-element -->
-    <style id="expo-reset">
-      /* These styles make the body full-height */
-      html,
-      body {
-        height: 100%;
-      }
-      /* These styles disable body scrolling if you are using <ScrollView> */
-      body {
-        overflow: hidden;
-      }
-      /* These styles make the root element full-height */
-      #root {
-        display: flex;
-        height: 100%;
-        flex: 1;
-      }
-    </style>
-    <style>
-  /* 強制讓排班表切換月份的按鈕、箭頭顯示出來 */
-  button, [role="button"], svg, path {
-    color: #333333 !important; /* 強制把箭頭變成深灰色 */
-    fill: #333333 !important;  /* 防止 SVG 圖片變透明 */
-    opacity: 1 !important;     /* 防止被隱形 */
-  }
-</style>
+  <style id="expo-reset">
+    html, body {
+      height: 100%;
+    }
+    body {
+      overflow: hidden;
+    }
+    #root {
+      display: flex;
+      height: 100%;
+      flex: 1;
+    }
+  </style>
 
-  </head>
+  <style>
+    button, 
+    [role="button"], 
+    svg, 
+    path, 
+    span,
+    div[class*="Button"],
+    div[class*="Text"] {
+      color: #4CAF50 !important;       /* 強制文字或箭頭變成漂亮綠色 */
+      fill: #4CAF50 !important;        /* 強制填充顏色變成綠色 */
+      stroke: #4CAF50 !important;      /* 強制線條顏色變成綠色 */
+      opacity: 1 !important;           /* 拒絕任何透明度，強制百分之百亮出來 */
+      visibility: visible !important;  /* 拒絕隱形 */
+    }
+  </style>
+</head>
+
 
   <body>
 <div id="install-container" style="display: none; text-align: center; margin: 20px 0;">
