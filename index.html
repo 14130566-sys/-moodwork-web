@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <title>MoodWork</title>
     
     <link rel="manifest" href="./manifest.json">
@@ -14,27 +14,9 @@
     <meta name="apple-mobile-web-app-title" content="MoodWork">
 
     <style id="expo-reset">
-      html, body { height: 100%; margin: 0; padding: 0; }
+      html, body { height: 100%; }
       body { overflow: hidden; }
       #root { display: flex; height: 100%; flex: 1; }
-
-      /* 🛠️ 在螢幕最上層，左邊和右邊做出兩塊隱形的巨大點擊/滑動區域 */
-      .nav-touch-zone {
-        position: fixed;
-        top: 0;
-        bottom: 0;
-        width: 15%; /* 佔據螢幕左右各 15% 的寬度，剛好在日曆左右兩側 */
-        z-index: 999999; /* 確保在最上層，絕對按得到 */
-        background: transparent; /* 隱形無色，不遮擋粉紅格子 */
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 24px;
-        color: rgba(76, 175, 80, 0.4); /* 淡淡的綠色箭頭提示，不需要可以不管它 */
-        user-select: none;
-      }
-      #zone-prev { left: 0; }  /* 左半邊感應區 */
-      #zone-next { right: 0; } /* 右半邊感應區 */
     </style>
   </head>
 
@@ -43,9 +25,6 @@
     
     <div id="root"></div>
 
-    <div id="zone-prev" class="nav-touch-zone">◀</div>
-    <div id="zone-next" class="nav-touch-zone">▶</div>
-
     <div id="pwa-install-container" style="display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:999999; width:90%; max-width:400px;">
       <button id="pwa-install-btn" style="width:100%; background-color:#4CAF50; color:white!important; border:none; padding:12px; font-size:16px; font-weight:bold; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.3); cursor:pointer;">📥 安裝 MoodWork 至手機桌面</button>
     </div>
@@ -53,7 +32,7 @@
     <script src="_expo/static/js/web/entry-810e11be6ea0cf3040099d9f54fee9a5.js" defer></script>
 
     <script>
-      // 1. PWA 下載安裝功能
+      // 1. 下載功能
       let deferredPrompt;
       window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault(); deferredPrompt = e;
@@ -69,30 +48,7 @@
         deferredPrompt = null; alert('MoodWork App 已成功安裝到妳的桌面囉！💰');
       });
 
-      // 2. 左右滑動 與 點擊隱形箭頭 的終極連動功能
-      function goPrev() {
-        console.log('上個月');
-        // 點擊原裝日曆左上角可能存在的切換按鈕
-        document.querySelectorAll('button, [role="button"], div').forEach(el => {
-          const r = el.getBoundingClientRect();
-          if (r.left < window.innerWidth * 0.3 && r.top < 150 && r.width > 0) el.click();
-        });
-      }
-
-      function goNext() {
-        console.log('下個月');
-        // 點擊原裝日曆右上角可能存在的切換按鈕
-        document.querySelectorAll('button, [role="button"], div').forEach(el => {
-          const r = el.getBoundingClientRect();
-          if (r.left > window.innerWidth * 0.7 && r.top < 150 && r.width > 0) el.click();
-        });
-      }
-
-      // 綁定給左右兩塊實體按鈕，一按就換月
-      document.getElementById('zone-prev').addEventListener('click', goPrev);
-      document.getElementById('zone-next').addEventListener('click', goNext);
-
-      // 同時保留滑動手勢，手往左滑換下月，往右滑換上月
+      // 2. 純淨左右滑動（手勢直接模擬點擊原本隱藏的換月按鈕）
       let touchstartX = 0;
       let touchendX = 0;
       window.addEventListener('touchstart', e => { touchstartX = e.changedTouches[0].screenX; }, { passive: true });
@@ -100,8 +56,17 @@
         touchendX = e.changedTouches[0].screenX;
         const dist = touchendX - touchstartX;
         if (Math.abs(dist) > 40) {
-          if (dist < 0) goNext(); // 往左滑 ➔ 下個月
-          else goPrev();          // 往右滑 ➔ 上個月
+          if (dist < 0) { // 往左滑 ➔ 下個月
+            document.querySelectorAll('button, [role="button"], div, img, svg').forEach(el => {
+              const r = el.getBoundingClientRect();
+              if (r.left > window.innerWidth * 0.6 && r.top < 150 && r.width > 0) el.click();
+            });
+          } else { // 往右滑 ➔ 上個月
+            document.querySelectorAll('button, [role="button"], div, img, svg').forEach(el => {
+              const r = el.getBoundingClientRect();
+              if (r.left < window.innerWidth * 0.4 && r.top < 150 && r.width > 0) el.click();
+            });
+          }
         }
       }, { passive: true });
     </script>
