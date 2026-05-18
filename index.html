@@ -53,100 +53,74 @@
 
 <script>
   let deferredPrompt;
-  const installContainer = document.getElementById('install-container');
-  const installBtn = document.getElementById('install-btn');
+  // 修正名字：讓按鈕大腦與畫面完全連上線！
+  const installContainer = document.getElementById('pwa-install-container') || document.getElementById('install-container');
+  const installBtn = document.getElementById('pwa-install-btn') || document.getElementById('install-btn');
 
   // 監聽手機系統的下載觸發事件
   window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault(); // 阻止系統預設的醜跳窗
-    deferredPrompt = e; // 暫存事件
-    installContainer.style.display = 'block'; // 亮出學校般的下載按鈕！
+    e.preventDefault(); 
+    deferredPrompt = e; 
+    if (installContainer) installContainer.style.display = 'block'; 
   });
 
-  // 當使用者點擊按鈕時
-  installBtn.addEventListener('click', async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt(); // 跳出正式安裝確認視窗
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      console.log('使用者安裝了 App');
-    }
-    deferredPrompt = null;
-    installContainer.style.display = 'none'; // 安裝後隱藏按鈕
-  });
+  // 當使用者點擊下載按鈕時
+  if (installBtn) {
+    installBtn.addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt(); 
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        console.log('使用者安裝了 App');
+      }
+      deferredPrompt = null;
+      if (installContainer) installContainer.style.display = 'none'; 
+    });
+  }
 
   // 安裝成功後的提示
   window.addEventListener('appinstalled', () => {
-    installContainer.style.display = 'none';
+    if (installContainer) installContainer.style.display = 'none';
     deferredPrompt = null;
     alert('MoodWork App 已成功安裝到妳的桌面囉！💰');
   });
-    // === 📱 新增：手機手指左右滑動換月份功能 ===
+
+  // === 📱 終極保證版：手機手指左右滑動換月份 ===
   let touchstartX = 0;
   let touchendX = 0;
 
-  // 監聽手指碰觸螢幕的瞬間
   window.addEventListener('touchstart', e => {
     touchstartX = e.changedTouches[0].screenX;
-  });
+  }, { passive: true });
 
-  // 監聽手指離開螢幕的瞬間
   window.addEventListener('touchend', e => {
     touchendX = e.changedTouches[0].screenX;
-    handleGesture();
-  });
-
-  // 判斷滑動方向並觸發切換
-  function handleGesture() {
-    const swipeDistance = touchendX - touchstartX;
     
-    // 滑動距離必須大於 50 像素才算數（防止誤觸）
-    if (Math.abs(swipeDistance) > 50) {
+    const swipeDistance = touchendX - touchstartX;
+    if (Math.abs(swipeDistance) > 40) { // 滑動超過40像素就觸發
       if (swipeDistance < 0) {
-        // 👈 往左滑：代表看「下個月」
-        console.log('向左滑：下個月');
-        triggerMonthChange('next');
+        console.log('向左滑 -> 模擬鍵盤右鍵（下個月）');
+        window.dispatchEvent(new KeyboardEvent('keydown', { keyCode: 39, bubbles: true }));
+        // 備用防線：狂搜網頁右邊的物件點點看
+        document.querySelectorAll('[role="button"], div, img, svg, button').forEach(el => {
+          if(el.getBoundingClientRect().left > window.innerWidth * 0.6) {
+            el.click();
+          }
+        });
       } else {
-        // 👉 往右滑：代表看「上個月」
-        console.log('向右滑：上個月');
-        triggerMonthChange('prev');
+        console.log('向右滑 -> 模擬鍵盤左鍵（上個月）');
+        window.dispatchEvent(new KeyboardEvent('keydown', { keyCode: 37, bubbles: true }));
+        // 備用防線：狂搜網頁左邊的物件點點看
+        document.querySelectorAll('[role="button"], div, img, svg, button').forEach(el => {
+          if(el.getBoundingClientRect().left < window.innerWidth * 0.4) {
+            el.click();
+          }
+        });
       }
     }
-  }
-
-  // 自動尋找排班表原本的按鈕並模擬點擊
-  function triggerMonthChange(direction) {
-    // 試圖尋找網頁裡帶有箭頭或特定說明的切換按鈕
-    const buttons = Array.from(document.querySelectorAll('button, [role="button"]'));
-    let targetButton = null;
-
-    if (direction === 'next') {
-      // 尋找文字包含 下個月、next、或往右箭頭的按鈕
-      targetButton = buttons.find(btn => 
-        btn.textContent.includes('下') || 
-        btn.innerText.includes('›') || 
-        (btn.innerHTML && (btn.innerHTML.includes('right') || btn.innerHTML.includes('forward')))
-      );
-    } else {
-      // 尋找文字包含 上個月、prev、或往左箭頭的按鈕
-      targetButton = buttons.find(btn => 
-        btn.textContent.includes('上') || 
-        btn.innerText.includes('‹') || 
-        (btn.innerHTML && (btn.innerHTML.includes('left') || btn.innerHTML.includes('back')))
-      );
-    }
-
-    // 如果找到了，就用程式代替使用者的手指去點擊它！
-    if (targetButton) {
-      targetButton.click();
-    } else {
-      // 備用方案：如果真的找不到按鈕，直接模擬鍵盤的左右方向鍵
-      const keyCode = direction === 'next' ? 39 : 37;
-      window.dispatchEvent(new KeyboardEvent('keydown', { keyCode: keyCode }));
-    }
-  }
-
+  }, { passive: true });
 </script>
+
 
     <!-- Use static rendering with Expo Router to support running without JavaScript. -->
     <noscript>
