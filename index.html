@@ -5,84 +5,17 @@
   <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <title>MoodWork</title>
-
   <link rel="manifest" href="./manifest.json">
   <link rel="apple-touch-icon" href="./icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="MoodWork">
-
   <style id="expo-reset">
     html, body { height: 100%; }
     body { overflow: hidden; }
     #root { display: flex; height: 100%; flex: 1; }
   </style>
-
-  <style>
-    #pwa-install-container {
-      display: none; 
-      position: fixed;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 999999;
-      width: 90%;
-      max-width: 400px;
-    }
-    #pwa-install-btn {
-      width: 100%;
-      background-color: #4CAF50;
-      color: white !important;
-      border: none;
-      padding: 12px;
-      font-size: 16px;
-      font-weight: bold;
-      border-radius: 8px;
-      box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
-      cursor: pointer;
-      text-align: center;
-    }
-  </style>
 </head>
-
 <body>
-  <div id="pwa-install-container">
-    <button id="pwa-install-btn">📥 安裝 MoodWork 至手機桌面</button>
-  </div>
-
   <div id="root"></div>
-
-  <script src="./runtime.js" defer></script>
-  <script src="./chunks/framework.js" defer></script>
-  <script src="./chunks/main.js" defer></script>
-
-  <script>
-    let deferredPrompt;
-    const installContainer = document.getElementById('pwa-install-container');
-    const installBtn = document.getElementById('pwa-install-btn');
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault(); 
-      deferredPrompt = e; 
-      if (installContainer) installContainer.style.display = 'block'; 
-    });
-
-    if (installBtn) {
-      installBtn.addEventListener('click', async () => {
-        if (!deferredPrompt) return;
-        deferredPrompt.prompt(); 
-        const { outcome } = await deferredPrompt.userChoice;
-        deferredPrompt = null;
-        if (installContainer) installContainer.style.display = 'none'; 
-      });
-    }
-
-    window.addEventListener('appinstalled', () => {
-      if (installContainer) installContainer.style.display = 'none';
-      deferredPrompt = null;
-      alert('MoodWork App 已成功安裝到妳的桌面囉！💰');
-    });
-  </script>
 </body>
 </html>
