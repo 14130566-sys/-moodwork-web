@@ -52,6 +52,36 @@
       deferredPrompt = null; alert('MoodWork App 已成功安裝到妳的桌面囉！💰');
     });
   </script>
+  <script>
+    (function() {
+      let touchstartX = 0;
+      let touchendX = 0;
+
+      // 監聽手指碰觸螢幕
+      window.addEventListener('touchstart', e => {
+        touchstartX = e.changedTouches[0].screenX;
+      }, { passive: true });
+
+      // 監聽手指離開螢幕
+      window.addEventListener('touchend', e => {
+        touchendX = e.changedTouches[0].screenX;
+        
+        const swipeDistance = touchendX - touchstartX;
+        // 滑動距離超過 40 像素就觸發
+        if (Math.abs(swipeDistance) > 40) { 
+          if (swipeDistance < 0) {
+            console.log('👉 偵測到向左滑：強迫換下個月');
+            // 模擬按下鍵盤的「右方向鍵」(keyCode 39)
+            window.dispatchEvent(new KeyboardEvent('keydown', { keyCode: 39, bubbles: true }));
+          } else {
+            console.log('👈 偵測到向右滑：強迫換上個月');
+            // 模擬按下鍵盤的「左方向鍵」(keyCode 37)
+            window.dispatchEvent(new KeyboardEvent('keydown', { keyCode: 37, bubbles: true }));
+          }
+        }
+      }, { passive: true });
+    })();
+  </script>
 
 </body>
 </html>
