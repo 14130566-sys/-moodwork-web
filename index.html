@@ -5,44 +5,41 @@
   <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <title>MoodWork</title>
-
   <link rel="manifest" href="./manifest.json">
   <link rel="apple-touch-icon" href="./icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="MoodWork">
 
   <style id="expo-reset">
-    html, body {
-      height: 100%;
-    }
-    body {
-      overflow: hidden;
-    }
-    #root {
-      display: flex;
-      height: 100%;
-      flex: 1;
-    }
+    html, body { height: 100%; }
+    body { overflow: hidden; }
+    #root { display: flex; height: 100%; flex: 1; }
   </style>
 
   <style>
-    button, 
-    [role="button"], 
-    svg, 
-    path, 
-    span,
-    div[class*="Button"],
-    div[class*="Text"] {
-      color: #4CAF50 !important;       /* 強制文字或箭頭變成漂亮綠色 */
-      fill: #4CAF50 !important;        /* 強制填充顏色變成綠色 */
-      stroke: #4CAF50 !important;      /* 強制線條顏色變成綠色 */
-      opacity: 1 !important;           /* 拒絕任何透明度，強制百分之百亮出來 */
-      visibility: visible !important;  /* 拒絕隱形 */
+    .custom-nav-btn {
+      position: fixed;
+      top: 15px; /* 剛好釘在頂端標題的高度 */
+      z-index: 999999; /* 確保絕對不會被網頁擋住 */
+      background: #4CAF50; /* 漂亮的綠色背景 */
+      color: white !important;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%; /* 圓形按鈕 */
+      font-size: 20px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
+      cursor: pointer;
     }
+    #custom-prev-btn { left: 20px; }  /* 釘在左邊 */
+    #custom-next-btn { right: 20px; } /* 釘在右邊 */
   </style>
 </head>
+
 
 
   <body>
@@ -130,5 +127,20 @@
     <!-- The root element for your Expo app. -->
     <div id="root"></div>
   <script src="/_expo/static/js/web/entry-810e11be6ea0cf3040099d9f54fee9a5.js" defer></script>
+     <button id="custom-prev-btn" class="custom-nav-btn">◀</button>
+  <button id="custom-next-btn" class="custom-nav-btn">▶</button>
+
+  <script>
+    // 讓左邊的 ◀ 按鈕被點擊時，模擬鍵盤左鍵（上個月）
+    document.getElementById('custom-prev-btn').addEventListener('click', () => {
+      window.dispatchEvent(new KeyboardEvent('keydown', { keyCode: 37, bubbles: true }));
+    });
+
+    // 讓右邊的 ▶ 按鈕被點擊時，模擬鍵盤右鍵（下個月）
+    document.getElementById('custom-next-btn').addEventListener('click', () => {
+      window.dispatchEvent(new KeyboardEvent('keydown', { keyCode: 39, bubbles: true }));
+    });
+  </script>
+
 </body>
 </html>
