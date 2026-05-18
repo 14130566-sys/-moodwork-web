@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="MoodWork">
@@ -31,6 +36,44 @@
   </head>
 
   <body>
+<div id="install-container" style="display: none; text-align: center; margin: 20px 0;">
+  <button id="install-btn" style="background-color: #4CAF50; color: white; padding: 12px 24px; font-size: 16px; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); font-weight: bold;">
+    📥 下載 MoodWork App 至手機桌面
+  </button>
+</div>
+
+<script>
+  let deferredPrompt;
+  const installContainer = document.getElementById('install-container');
+  const installBtn = document.getElementById('install-btn');
+
+  // 監聽手機系統的下載觸發事件
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault(); // 阻止系統預設的醜跳窗
+    deferredPrompt = e; // 暫存事件
+    installContainer.style.display = 'block'; // 亮出學校般的下載按鈕！
+  });
+
+  // 當使用者點擊按鈕時
+  installBtn.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt(); // 跳出正式安裝確認視窗
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      console.log('使用者安裝了 App');
+    }
+    deferredPrompt = null;
+    installContainer.style.display = 'none'; // 安裝後隱藏按鈕
+  });
+
+  // 安裝成功後的提示
+  window.addEventListener('appinstalled', () => {
+    installContainer.style.display = 'none';
+    deferredPrompt = null;
+    alert('MoodWork App 已成功安裝到妳的桌面囉！💰');
+  });
+</script>
+
     <!-- Use static rendering with Expo Router to support running without JavaScript. -->
     <noscript>
       You need to enable JavaScript to run this app.
