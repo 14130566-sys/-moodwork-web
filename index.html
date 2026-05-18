@@ -1,14 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
- <head>
+<html lang="zh-TW">
+<head>
   <meta charset="utf-8" />
   <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <title>MoodWork</title>
+
   <link rel="manifest" href="./manifest.json">
   <link rel="apple-touch-icon" href="./icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="MoodWork">
 
   <style id="expo-reset">
     html, body { height: 100%; }
@@ -17,130 +20,65 @@
   </style>
 
   <style>
-    .custom-nav-btn {
+    #pwa-install-container {
+      display: none; /* 預設隱藏，手機偵測到可下載時才會亮出來 */
       position: fixed;
-      top: 15px; /* 剛好釘在頂端標題的高度 */
-      z-index: 999999; /* 確保絕對不會被網頁擋住 */
-      background: #4CAF50; /* 漂亮的綠色背景 */
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 999999;
+      width: 90%;
+      max-width: 400px;
+    }
+    #pwa-install-btn {
+      width: 100%;
+      background-color: #4CAF50;
       color: white !important;
       border: none;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%; /* 圓形按鈕 */
-      font-size: 20px;
+      padding: 12px;
+      font-size: 16px;
       font-weight: bold;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
+      border-radius: 8px;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
       cursor: pointer;
+      text-align: center;
     }
-    #custom-prev-btn { left: 20px; }  /* 釘在左邊 */
-    #custom-next-btn { right: 20px; } /* 釘在右邊 */
   </style>
 </head>
 
+<body>
+  <div id="pwa-install-container">
+    <button id="pwa-install-btn">📥 安裝 MoodWork 至手機桌面</button>
+  </div>
 
-
-  <body>
-<div id="install-container" style="display: none; text-align: center; margin: 20px 0;">
-  <button id="install-btn" style="background-color: #4CAF50; color: white; padding: 12px 24px; font-size: 16px; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); font-weight: bold;">
-    📥 下載 MoodWork App 至手機桌面
-  </button>
-</div>
-
-<script>
-  let deferredPrompt;
-  // 修正名字：讓按鈕大腦與畫面完全連上線！
-  const installContainer = document.getElementById('pwa-install-container') || document.getElementById('install-container');
-  const installBtn = document.getElementById('pwa-install-btn') || document.getElementById('install-btn');
-
-  // 監聽手機系統的下載觸發事件
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault(); 
-    deferredPrompt = e; 
-    if (installContainer) installContainer.style.display = 'block'; 
-  });
-
-  // 當使用者點擊下載按鈕時
-  if (installBtn) {
-    installBtn.addEventListener('click', async () => {
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt(); 
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        console.log('使用者安裝了 App');
-      }
-      deferredPrompt = null;
-      if (installContainer) installContainer.style.display = 'none'; 
-    });
-  }
-
-  // 安裝成功後的提示
-  window.addEventListener('appinstalled', () => {
-    if (installContainer) installContainer.style.display = 'none';
-    deferredPrompt = null;
-    alert('MoodWork App 已成功安裝到妳的桌面囉！💰');
-  });
-
-  // === 📱 終極保證版：手機手指左右滑動換月份 ===
-  let touchstartX = 0;
-  let touchendX = 0;
-
-  window.addEventListener('touchstart', e => {
-    touchstartX = e.changedTouches[0].screenX;
-  }, { passive: true });
-
-  window.addEventListener('touchend', e => {
-    touchendX = e.changedTouches[0].screenX;
-    
-    const swipeDistance = touchendX - touchstartX;
-    if (Math.abs(swipeDistance) > 40) { // 滑動超過40像素就觸發
-      if (swipeDistance < 0) {
-        console.log('向左滑 -> 模擬鍵盤右鍵（下個月）');
-        window.dispatchEvent(new KeyboardEvent('keydown', { keyCode: 39, bubbles: true }));
-        // 備用防線：狂搜網頁右邊的物件點點看
-        document.querySelectorAll('[role="button"], div, img, svg, button').forEach(el => {
-          if(el.getBoundingClientRect().left > window.innerWidth * 0.6) {
-            el.click();
-          }
-        });
-      } else {
-        console.log('向右滑 -> 模擬鍵盤左鍵（上個月）');
-        window.dispatchEvent(new KeyboardEvent('keydown', { keyCode: 37, bubbles: true }));
-        // 備用防線：狂搜網頁左邊的物件點點看
-        document.querySelectorAll('[role="button"], div, img, svg, button').forEach(el => {
-          if(el.getBoundingClientRect().left < window.innerWidth * 0.4) {
-            el.click();
-          }
-        });
-      }
-    }
-  }, { passive: true });
-</script>
-
-
-    <!-- Use static rendering with Expo Router to support running without JavaScript. -->
-    <noscript>
-      You need to enable JavaScript to run this app.
-    </noscript>
-    <!-- The root element for your Expo app. -->
-    <div id="root"></div>
-  <script src="/_expo/static/js/web/entry-810e11be6ea0cf3040099d9f54fee9a5.js" defer></script>
-     <button id="custom-prev-btn" class="custom-nav-btn">◀</button>
-  <button id="custom-next-btn" class="custom-nav-btn">▶</button>
+  <div id="root"></div>
 
   <script>
-    // 讓左邊的 ◀ 按鈕被點擊時，模擬鍵盤左鍵（上個月）
-    document.getElementById('custom-prev-btn').addEventListener('click', () => {
-      window.dispatchEvent(new KeyboardEvent('keydown', { keyCode: 37, bubbles: true }));
+    let deferredPrompt;
+    const installContainer = document.getElementById('pwa-install-container');
+    const installBtn = document.getElementById('pwa-install-btn');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault(); 
+      deferredPrompt = e; 
+      if (installContainer) installContainer.style.display = 'block'; 
     });
 
-    // 讓右邊的 ▶ 按鈕被點擊時，模擬鍵盤右鍵（下個月）
-    document.getElementById('custom-next-btn').addEventListener('click', () => {
-      window.dispatchEvent(new KeyboardEvent('keydown', { keyCode: 39, bubbles: true }));
+    if (installBtn) {
+      installBtn.addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt(); 
+        const { outcome } = await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        if (installContainer) installContainer.style.display = 'none'; 
+      });
+    }
+
+    window.addEventListener('appinstalled', () => {
+      if (installContainer) installContainer.style.display = 'none';
+      deferredPrompt = null;
+      alert('MoodWork App 已成功安裝到妳的桌面囉！💰');
     });
   </script>
-
 </body>
 </html>
