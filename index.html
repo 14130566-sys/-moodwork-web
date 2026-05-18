@@ -33,5 +33,25 @@
     <!-- The root element for your Expo app. -->
     <div id="root"></div>
   <script src="/_expo/static/js/web/entry-810e11be6ea0cf3040099d9f54fee9a5.js" defer></script>
+      <div id="pwa-install-container" style="display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:999999; width:90%; max-width:400px;">
+    <button id="pwa-install-btn" style="width:100%; background-color:#4CAF50; color:white!important; border:none; padding:12px; font-size:16px; font-weight:bold; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.3); cursor:pointer;">📥 安裝 MoodWork 至手機桌面</button>
+  </div>
+  <script>
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault(); deferredPrompt = e;
+      document.getElementById('pwa-install-container').style.display = 'block';
+    });
+    document.getElementById('pwa-install-btn').addEventListener('click', async () => {
+      if (!deferredPrompt) return; deferredPrompt.prompt();
+      await deferredPrompt.userChoice; deferredPrompt = null;
+      document.getElementById('pwa-install-container').style.display = 'none';
+    });
+    window.addEventListener('appinstalled', () => {
+      document.getElementById('pwa-install-container').style.display = 'none';
+      deferredPrompt = null; alert('MoodWork App 已成功安裝到妳的桌面囉！💰');
+    });
+  </script>
+
 </body>
 </html>
