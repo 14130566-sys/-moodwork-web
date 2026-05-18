@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no" />
     <title>MoodWork</title>
     
     <link rel="manifest" href="./manifest.json">
@@ -14,9 +14,26 @@
     <meta name="apple-mobile-web-app-title" content="MoodWork">
 
     <style id="expo-reset">
-      html, body { height: 100%; }
+      html, body { height: 100%; margin: 0; padding: 0; }
       body { overflow: hidden; }
       #root { display: flex; height: 100%; flex: 1; }
+
+      /* 🎨 藍色箭頭強制復原魔法：把所有可能是日曆箭頭的元素通通染成原本的藍色！ */
+      button, 
+      [role="button"], 
+      svg, 
+      path, 
+      img,
+      span,
+      div[class*="Button"],
+      div[class*="Header"] div,
+      div[class*="Calendar"] img {
+        color: #007AFF !important;       /* 經典原裝 iOS 藍色 */
+        fill: #007AFF !important;        /* 強制填充藍色 */
+        stroke: #007AFF !important;      /* 強制線條藍色 */
+        opacity: 1 !important;           /* 徹底取消透明，強制顯示 */
+        visibility: visible !important;  /* 拒絕隱形 */
+      }
     </style>
   </head>
 
@@ -26,13 +43,13 @@
     <div id="root"></div>
 
     <div id="pwa-install-container" style="display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:999999; width:90%; max-width:400px;">
-      <button id="pwa-install-btn" style="width:100%; background-color:#4CAF50; color:white!important; border:none; padding:12px; font-size:16px; font-weight:bold; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.3); cursor:pointer;">📥 安裝 MoodWork 至手機桌面</button>
+      <button id="pwa-install-btn" style="width:100%; background-color:#007AFF; color:white!important; border:none; padding:12px; font-size:16px; font-weight:bold; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.3); cursor:pointer;">📥 安裝 MoodWork 至手機桌面</button>
     </div>
 
     <script src="_expo/static/js/web/entry-810e11be6ea0cf3040099d9f54fee9a5.js" defer></script>
 
     <script>
-      // 1. 下載功能
+      // 1. PWA 下載功能
       let deferredPrompt;
       window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault(); deferredPrompt = e;
@@ -43,28 +60,31 @@
         await deferredPrompt.userChoice; deferredPrompt = null;
         document.getElementById('pwa-install-container').style.display = 'none';
       });
-      window.addEventListener('appinstalled', () => {
-        document.getElementById('pwa-install-container').style.display = 'none';
-        deferredPrompt = null; alert('MoodWork App 已成功安裝到妳的桌面囉！💰');
-      });
 
-      // 2. 純淨左右滑動（手勢直接模擬點擊原本隱藏的換月按鈕）
+      // 2. 擴大感應滑動：直接去點擊左上角和右上角的所有換月元素
       let touchstartX = 0;
       let touchendX = 0;
       window.addEventListener('touchstart', e => { touchstartX = e.changedTouches[0].screenX; }, { passive: true });
       window.addEventListener('touchend', e => {
         touchendX = e.changedTouches[0].screenX;
         const dist = touchendX - touchstartX;
-        if (Math.abs(dist) > 40) {
-          if (dist < 0) { // 往左滑 ➔ 下個月
+        
+        if (Math.abs(dist) > 30) { // 稍微降低觸發門檻（30像素），讓滑動更靈敏
+          if (dist < 0) { 
+            // 👉 往左滑 ➔ 自動點擊右半邊（下個月）的藍色箭頭區塊
             document.querySelectorAll('button, [role="button"], div, img, svg').forEach(el => {
               const r = el.getBoundingClientRect();
-              if (r.left > window.innerWidth * 0.6 && r.top < 150 && r.width > 0) el.click();
+              if (r.left > window.innerWidth * 0.5 && r.top < 180 && r.width > 0) {
+                el.click();
+              }
             });
-          } else { // 往右滑 ➔ 上個月
+          } else { 
+            // 👈 往右滑 ➔ 自動點擊左半邊（上個月）的藍色箭頭區塊
             document.querySelectorAll('button, [role="button"], div, img, svg').forEach(el => {
               const r = el.getBoundingClientRect();
-              if (r.left < window.innerWidth * 0.4 && r.top < 150 && r.width > 0) el.click();
+              if (r.left < window.innerWidth * 0.5 && r.top < 180 && r.width > 0) {
+                el.click();
+              }
             });
           }
         }
