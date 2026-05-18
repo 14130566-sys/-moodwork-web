@@ -52,31 +52,42 @@
       deferredPrompt = null; alert('MoodWork App 已成功安裝到妳的桌面囉！💰');
     });
   </script>
+ 
   <script>
     (function() {
       let touchstartX = 0;
       let touchendX = 0;
 
-      // 監聽手指碰觸螢幕
       window.addEventListener('touchstart', e => {
         touchstartX = e.changedTouches[0].screenX;
       }, { passive: true });
 
-      // 監聽手指離開螢幕
       window.addEventListener('touchend', e => {
         touchendX = e.changedTouches[0].screenX;
-        
         const swipeDistance = touchendX - touchstartX;
-        // 滑動距離超過 40 像素就觸發
+        
+        // 滑動距離超過 40 像素就發動轟炸
         if (Math.abs(swipeDistance) > 40) { 
           if (swipeDistance < 0) {
-            console.log('👉 偵測到向左滑：強迫換下個月');
-            // 模擬按下鍵盤的「右方向鍵」(keyCode 39)
-            window.dispatchEvent(new KeyboardEvent('keydown', { keyCode: 39, bubbles: true }));
+            console.log('👉 向左滑：點擊右半邊所有可能的換月按鈕');
+            // 搜尋網頁右半邊（大於螢幕寬度 60%）的所有按鈕、點擊區塊、甚至圖片
+            document.querySelectorAll('button, [role="button"], div, img, svg').forEach(el => {
+              const rect = el.getBoundingClientRect();
+              // 只要高度在頂端（通常日曆切換在上面），且偏右邊，就通通按一遍！
+              if (rect.left > window.innerWidth * 0.6 && rect.top < 150 && rect.width > 0) {
+                el.click();
+              }
+            });
           } else {
-            console.log('👈 偵測到向右滑：強迫換上個月');
-            // 模擬按下鍵盤的「左方向鍵」(keyCode 37)
-            window.dispatchEvent(new KeyboardEvent('keydown', { keyCode: 37, bubbles: true }));
+            console.log('👈 向右滑：點擊左半邊所有可能的換月按鈕');
+            // 搜尋網頁左半邊（小於螢幕寬度 40%）的所有按鈕與區塊
+            document.querySelectorAll('button, [role="button"], div, img, svg').forEach(el => {
+              const rect = el.getBoundingClientRect();
+              // 只要高度在頂端，且偏左邊，就通通按一遍！
+              if (rect.left < window.innerWidth * 0.4 && rect.top < 150 && rect.width > 0) {
+                el.click();
+              }
+            });
           }
         }
       }, { passive: true });
